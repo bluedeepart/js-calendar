@@ -1,0 +1,29 @@
+$primary_color: #bb2020;
+$secondary_color: #ffeb4d;
+$text_color: #06111c;
+$gray: #bec7c7;
+$dark: #121317;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  color: $text_color;
+  line-height: 1.4;
+}
+
+.container {
+  margin: 100px auto;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 16px;
+}
+
+.text-center {
+  text-align: center;
+}
