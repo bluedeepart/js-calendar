@@ -5,18 +5,114 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/app.min.css">
     <title>JavaScript Calendar</title>
 </head>
 
 <body>
 
-    <main>
+    <header class="text-center bg-dark p-3 text-white">
         <div class="container">
-            <h1 class="text-center">JavaScript Calendar</h1>
-            <div id="app"></div>
+            <h1>JavaScript Calendar</h1>
+        </div>
+    </header>
+
+    <main>
+        <div class="container-md">
+            <div id="app">
+                <div id="calender">
+                    <div id="calender">
+                        <div class="month-and-year">
+                            <button class="cal-nav cal-nav-prev">&lt;</button>
+                            <h4>September 2021</h4>
+                            <button class="cal-nav cal-nav-next">&gt;</button>
+                        </div>
+                        <ul class="day-list" id="day_list">
+                            <li class="day-list-item" data-day="S">S</li>
+                            <li class="day-list-item" data-day="M">M</li>
+                            <li class="day-list-item" data-day="T">T</li>
+                            <li class="day-list-item active" data-day="W">W</li>
+                            <li class="day-list-item" data-day="T">T</li>
+                            <li class="day-list-item" data-day="F">F</li>
+                            <li class="day-list-item" data-day="S">S</li>
+                        </ul>
+                        <ul class="date-list" id="date_list">
+                            <li class="date-list-item prev-month" data-day="prev-month">29</li>
+                            <li class="date-list-item prev-month" data-day="prev-month">30</li>
+                            <li class="date-list-item prev-month" data-day="prev-month">31</li>
+                            <li class="date-list-item" data-day="1">1</li>
+                            <li class="date-list-item" data-day="2">2</li>
+                            <li class="date-list-item" data-day="3">3</li>
+                            <li class="date-list-item" data-day="4">4</li>
+                            <li class="date-list-item" data-day="5">5</li>
+                            <li class="date-list-item" data-day="6">6</li>
+                            <li class="date-list-item" data-day="7">7</li>
+                            <li class="date-list-item" data-day="8">8</li>
+                            <li class="date-list-item" data-day="9">9</li>
+                            <li class="date-list-item" data-day="10">10</li>
+                            <li class="date-list-item" data-day="11">11</li>
+                            <li class="date-list-item" data-day="12">12</li>
+                            <li class="date-list-item" data-day="13">13</li>
+                            <li class="date-list-item" data-day="14">14</li>
+                            <li class="date-list-item active" data-day="15">15</li>
+                            <li class="date-list-item" data-day="16">16</li>
+                            <li class="date-list-item" data-day="17">17</li>
+                            <li class="date-list-item" data-day="18">18</li>
+                            <li class="date-list-item" data-day="19">19</li>
+                            <li class="date-list-item" data-day="20">20</li>
+                            <li class="date-list-item" data-day="21">21</li>
+                            <li class="date-list-item" data-day="22">22</li>
+                            <li class="date-list-item" data-day="23">23</li>
+                            <li class="date-list-item" data-day="24">24</li>
+                            <li class="date-list-item" data-day="25">25</li>
+                            <li class="date-list-item" data-day="26">26</li>
+                            <li class="date-list-item" data-day="27">27</li>
+                            <li class="date-list-item" data-day="28">28</li>
+                            <li class="date-list-item" data-day="29">29</li>
+                            <li class="date-list-item" data-day="30">30</li>
+                            <li class="date-list-item next-month" data-day="next-month">1</li>
+                            <li class="date-list-item next-month" data-day="next-month">2</li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="events">
+                    <h2 id="show-date">15 Sep</h2>
+                    <div class="event-wrapper">
+                        <div class="event-header">
+                            <h5>All Events</h5>
+                            <button><span>&plus;</span></button>
+                        </div>
+
+                        <ui class="event-list">
+                            <li class="event-list-item">
+                                <div class="event-title">Birthday</div>
+                                <div class="event-des">10th Aug | 06:00 pm</div>
+                            </li>
+                            <li class="event-list-item">
+                                <div class="event-title">Birthday</div>
+                                <div class="event-des">10th Aug | 06:00 pm</div>
+                            </li>
+                            <li class="event-list-item">
+                                <div class="event-title">Birthday</div>
+                                <div class="event-des">10th Aug | 06:00 pm</div>
+                            </li>
+                            <li class="event-list-item">
+                                <div class="event-title">Birthday</div>
+                                <div class="event-des">10th Aug | 06:00 pm</div>
+                            </li>
+                        </ui>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <footer class="text-center bg-dark p-3 text-white">
+        <div class="container">
+            © <a href="http://deepart.in" target="_blank" class="text-white">Deepart</a>
+        </div>
+    </footer>
 
     <script src="assets/js/deepart-calender.js"></script>
     <script src="assets/js/app.js"></script>
