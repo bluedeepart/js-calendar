@@ -116,13 +116,26 @@ body {
     &-item {
       line-height: 72px;
       height: 72px;
+      @extend %flex-center;
+      justify-content: center;
+      span {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        display: inline-block;
+        vertical-align: middle;
+      }
       // border-bottom: 2px solid transparent;
       &.active {
         // border-color: $primary_color;
-        border-radius: 50%;
-        font-weight: bold;
-        color: $dark;
-        box-shadow: 0 8px 20px transparentize($dark, $amount: 0.7);
+        span {
+          border-radius: 50%;
+          font-weight: bold;
+          // color: $dark;
+          background-color: $secondary_color;
+          color: #ffffff;
+          box-shadow: 0 8px 20px transparentize($dark, $amount: 0.7);
+        }
       }
     }
   }
@@ -136,8 +149,9 @@ body {
   h4 {
     font-size: 2rem;
     text-transform: uppercase;
-    color: $gray;
+    color: $dark;
     margin: 1rem 0;
+    font-weight: normal;
   }
 }
 
@@ -165,7 +179,7 @@ body {
   }
 }
 
-h2#show-date {
+.current-date {
   font-size: 3rem;
   text-transform: uppercase;
   margin-bottom: 2rem;
@@ -287,5 +301,12 @@ h2#show-date {
 @media only screen and (max-width: 629px) {
   h1 {
     font-size: 1.5rem;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .date-list-item {
+    line-height: 40px;
+    height: 41px;
   }
 }
