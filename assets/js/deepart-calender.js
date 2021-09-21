@@ -41,26 +41,34 @@ class StClass {
     return dayWorldLimit;
   }
 
-  static createNode(root, tag, cssClass) {
+  static createNode(root, tag, ...cssClass) {
     const tagName = document.createElement(tag);
-    tagName.classList.add(cssClass);
+    cssClass = cssClass.join(" ");
+    tagName.className = cssClass;
     root.appendChild(tagName);
     return tagName;
   }
 
-  static checkInputValue = (y, m) => {
-    return (y, m) ? new Date(y, m) : new Date();
+  static checkInputValue = (y, m, d) => {
+    return (y, m, d) ? new Date(y, m, d) : new Date();
   };
 }
 
 class Calender {
-  d = new Date();
-  curYear = this.d.getFullYear();
-  curMonth = this.d.getMonth();
-  curDate = this.d.getDate();
-
   constructor() {
-    this.today = StClass.checkInputValue();
+    this.d = new Date();
+    this.curYear = this.d.getFullYear();
+    this.curMonth = this.d.getMonth();
+    this.curDate = this.d.getDate();
+
+    this.cY = this.d.getFullYear();
+    this.cM = this.d.getMonth();
+
+    this.today = StClass.checkInputValue(
+      this.gsCurrentYear,
+      this.gsCurrentMonth,
+      this.curDate
+    );
     this.year = this.today.getFullYear();
     this.month = this.today.getMonth();
     this.day = this.today.getDay();
@@ -69,48 +77,50 @@ class Calender {
     this.endDate = StClass.endDate(this.year, this.month);
     this.prevEndDate = StClass.endDate(this.year, this.month - 1);
     this.nextStartDate = StClass.startDate(this.year, this.month + 1);
+
     this.dayWordLimit = StClass.dayWordLimit();
+    this.updateDate(this.gsCurrentYear, this.gsCurrentMonth);
   }
 
   get gsCurrentMonth() {
-    return this.month;
+    return this.curMonth;
   }
   get gsCurrentYear() {
-    return this.year;
+    return this.curYear;
   }
 
   /* getter setter for next month */
   set gsNextMonth(prevMonth) {
-    this.month = prevMonth;
+    this.curMonth = prevMonth;
   }
 
   get gsNextMonth() {
-    return this.month++;
+    return this.curMonth++;
   }
 
   set gsNextYear(prevYear) {
-    this.year = prevYear;
+    this.curYear = prevYear;
   }
 
   get gsNextYear() {
-    return this.year++;
+    return this.curYear++;
   }
 
   /* getter setter for previus month */
   set gsPrevMonth(nextMonth) {
-    this.month = nextMonth;
+    this.curMonth = nextMonth;
   }
 
   get gsPrevMonth() {
-    return this.month--;
+    return this.curMonth--;
   }
 
   set gsPrevYear(nextYear) {
-    this.year = nextYear;
+    this.curYear = nextYear;
   }
 
   get gsPrevYear() {
-    return this.year--;
+    return this.curYear--;
   }
 
   showPrevMonth() {
@@ -119,9 +129,9 @@ class Calender {
       this.gsPrevYear;
     }
     this.gsPrevMonth = this.gsCurrentMonth;
-    console.log(
-      `Updated Month: ${this.gsCurrentMonth} and Updated Year ${this.gsCurrentYear}`
-    );
+    this.updateMonthAndYear(this.gsCurrentYear, this.gsCurrentMonth);
+    this.updateDate(this.gsCurrentYear, this.gsCurrentMonth);
+    this.addHoliday();
   }
 
   showNextMonth() {
@@ -130,15 +140,121 @@ class Calender {
       this.gsNextYear;
     }
     this.gsNextMonth = this.gsCurrentMonth;
-    console.log(
-      `Updated Month: ${this.gsCurrentMonth} and Updated Year ${this.gsCurrentYear}`
-    );
+    this.updateMonthAndYear(this.gsCurrentYear, this.gsCurrentMonth);
+    this.updateDate(this.gsCurrentYear, this.gsCurrentMonth);
+    this.addHoliday();
+  }
+
+  updateMonthAndYear(y = null, m = null) {
+    const monthYear = document.querySelector(".month-and-year");
+    const heading = monthYear.querySelector("h4");
+    heading.innerHTML = `${months[m]} ${y}`;
+    const dayListItem = document.querySelectorAll(".day-list-item");
+
+    const headYear = heading.textContent.split(" ").join("").indexOf(this.cY);
+    const headMonth = heading.textContent
+      .split(" ")
+      .join("")
+      .indexOf(months[this.cM]);
+
+    if (headYear !== -1 && headMonth !== -1) {
+      dayListItem.forEach((d, index) => {
+        if (index === this.day) {
+          d.classList.add("active");
+        }
+      });
+    } else {
+      dayListItem.forEach((d) => {
+        d.classList.remove("active");
+      });
+    }
+  }
+
+  updateDate(year, month) {
+    const dateList = document.querySelector(".date-list");
+
+    const startDate = StClass.startDate(year, month);
+    const endDate = StClass.endDate(year, month);
+    const prevEnd = StClass.endDate(year, month - 1);
+    const nextStart = StClass.startDate(year, month + 1);
+
+    let firstDay = startDate.getDay();
+    let lastDay = days.length - endDate.getDay();
+    let lastDate = endDate.getDate();
+    let prevEndDate = prevEnd.getDate();
+    let nextStartDate = nextStart.getDate();
+
+    if (dateList) {
+      dateList.innerHTML = "";
+      for (let prev = prevEndDate - firstDay + 1; prev <= prevEndDate; prev++) {
+        const dateListItem = StClass.createNode(
+          dateList,
+          "li",
+          "date-list-item",
+          "prev-month"
+        );
+        dateListItem.innerHTML = `<span>${prev}</span>`;
+      }
+
+      for (let i = 1; i <= lastDate; i++) {
+        const monthYear = document.querySelector(".month-and-year");
+        const heading = monthYear.querySelector("h4");
+        const headYear = heading.textContent.indexOf(this.cY);
+        const headMonth = heading.textContent.indexOf(months[this.cM]);
+
+        const dateListItem = StClass.createNode(
+          dateList,
+          "li",
+          "date-list-item"
+        );
+        dateListItem.innerHTML = `<span>${i}</span>`;
+        if (headYear !== -1 && headMonth !== -1) {
+          if (parseInt(dateListItem.textContent) === this.curDate) {
+            dateListItem.classList.add("active");
+          }
+        }
+      }
+
+      for (let next = nextStartDate; next < lastDay; next++) {
+        const dateListItem = StClass.createNode(
+          dateList,
+          "li",
+          "date-list-item",
+          "next-month"
+        );
+        dateListItem.innerHTML = `<span>${next}</span>`;
+      }
+    }
+  }
+
+  addHoliday() {
+    const dayListItem = document.querySelectorAll(".day-list-item");
+    const dateListItem = document.querySelectorAll(".date-list-item");
+
+    dayListItem.forEach((d, i, dy) => {
+      dy[0].classList.add("holiday");
+      dy[days.length - 1].classList.add("holiday");
+    });
+
+    dateListItem.forEach((d, i, dt) => {
+      dt[0].classList.add("holiday");
+      for (let j = 0; j < dateListItem.length; j = j + days.length) {
+        dt[j].classList.add("holiday");
+      }
+      for (
+        let j = days.length - 1;
+        j < dateListItem.length;
+        j = j + days.length
+      ) {
+        dt[j].classList.add("holiday");
+      }
+    });
   }
 
   init(root, eventRoot) {
-    console.log(
-      `${this.day} ${this.date}-${this.gsCurrentMonth}-${this.gsCurrentYear}`
-    );
+    // console.log(
+    //   `${this.day} ${this.date}-${this.gsCurrentMonth}-${this.gsCurrentYear}`
+    // );
     const ui = new UI(root);
     ui.createMonthAndYear();
     ui.createDays();
@@ -147,6 +263,9 @@ class Calender {
     const eventsUI = new EventsUI(eventRoot);
     eventsUI.previewDate();
     eventsUI.showAllEvents();
+
+    this.updateMonthAndYear(this.gsCurrentYear, this.gsCurrentMonth);
+    this.addHoliday();
   }
 }
 
@@ -155,6 +274,7 @@ class UI extends Calender {
     super();
     this.rootNode = document.getElementById(root);
   }
+
   createMonthAndYear() {
     const monthYear = StClass.createNode(
       this.rootNode,
@@ -181,48 +301,13 @@ class UI extends Calender {
       const dayListItem = StClass.createNode(dayList, "li", "day-list-item");
       dayListItem.dataset.day = d;
       dayListItem.textContent = d;
-      if (index === this.day) {
-        dayListItem.classList.add("active");
-      }
     });
   }
 
   createDate() {
     const dateList = StClass.createNode(this.rootNode, "ul", "date-list");
     dateList.id = "date_list";
-    let firstDay = this.startDate.getDay();
-    let lastDay = days.length - this.endDate.getDay();
-    let lastDate = this.endDate.getDate();
-    let prevEndDate = this.prevEndDate.getDate();
-    let nextStartDate = this.nextStartDate.getDate();
-
-    for (let prev = prevEndDate - firstDay + 1; prev <= prevEndDate; prev++) {
-      const dateListItem = StClass.createNode(
-        dateList,
-        "li",
-        "date-list-item",
-        "prev-month"
-      );
-      dateListItem.innerHTML = `<span>${prev}</span>`;
-    }
-
-    for (let i = 1; i <= lastDate; i++) {
-      const dateListItem = StClass.createNode(dateList, "li", "date-list-item");
-      dateListItem.innerHTML = `<span>${i}</span>`;
-      if (i === this.date) {
-        dateListItem.classList.add("active");
-      }
-    }
-
-    for (let next = nextStartDate; next < lastDay; next++) {
-      const dateListItem = StClass.createNode(
-        dateList,
-        "li",
-        "date-list-item",
-        "next-month"
-      );
-      dateListItem.innerHTML = `<span>${next}</span>`;
-    }
+    this.updateDate(this.gsCurrentYear, this.gsCurrentMonth);
   }
 }
 
@@ -254,8 +339,8 @@ class EventsUI extends Calender {
 
   showAllEvents() {
     let events = [
-      new Events("Yashvi's Birthday", "10 Aug", "8:00 AM"),
-      new Events("Divisha's Birthday", "18 May", "6:00 PM"),
+      new Events("Yashvi's Birthday", "10 Aug"),
+      new Events("Divisha's Birthday", "18 May"),
     ];
     const eventWrapper = StClass.createNode(
       this.rootNode,
