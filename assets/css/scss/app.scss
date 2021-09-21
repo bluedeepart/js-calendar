@@ -1,8 +1,11 @@
-$primary_color: #4d565e;
-$secondary_color: #f2055c;
+$primary_color: #768591;
+$secondary_color: #dea800;
+$third_color: #a8c0ce;
 $text_color: #06111c;
-$gray: #bec7c7;
+$gray: #aab0b5;
 $dark: #332e42;
+$red: #d90d1e;
+$dark_red: #8c031c;
 
 %flex-center {
   display: flex;
@@ -87,6 +90,7 @@ body {
     @extend %list-style;
 
     &-item {
+      border: 1px solid transparentize($third_color, $amount: 0.95);
       width: calc(100% / 7);
       text-align: center;
       text-transform: uppercase;
@@ -97,15 +101,21 @@ body {
 .day {
   &-list {
     &-item {
-      line-height: 40px;
-      height: 40px;
+      line-height: 56px;
+      height: 56px;
       font-weight: bold;
-      border-bottom: 2px solid transparent;
       color: $dark;
+      opacity: 0.6;
+      background-color: transparentize($third_color, $amount: 0.8);
+
+      // &.holiday {
+      //   background-color: transparentize($red, $amount: 0.8);
+      //   border-color: transparentize($dark_red, $amount: 0.95);
+      //   color: $dark_red;
+      // }
 
       &.active {
-        border-color: $secondary_color;
-        color: $text_color;
+        opacity: 1;
       }
     }
   }
@@ -116,13 +126,55 @@ body {
     &-item {
       line-height: 72px;
       height: 72px;
-      // border-bottom: 2px solid transparent;
+      @extend %flex-center;
+      justify-content: center;
+      span {
+        width: 48px;
+        height: 48px;
+        line-height: 48px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      &.prev,
+      &.next {
+        &-month {
+          color: transparentize($dark, 0.5);
+
+          &.holiday {
+            color: transparentize($dark_red, $amount: 0.4);
+          }
+        }
+      }
       &.active {
-        // border-color: $primary_color;
-        border-radius: 50%;
-        font-weight: bold;
-        color: $dark;
-        box-shadow: 0 8px 20px transparentize($dark, $amount: 0.7);
+        span {
+          border-radius: 50%;
+          font-weight: bold;
+          background-color: $third_color;
+          box-shadow: 0 8px 20px transparentize($dark, $amount: 0.7);
+        }
+      }
+
+      &.holiday {
+        color: $dark_red;
+        // span {
+        //   position: relative;
+
+        //   &::before {
+        //     content: "";
+        //     background-color: transparentize($red, $amount: 0.3);
+        //     width: 0.25rem;
+        //     height: 0.25rem;
+        //     position: absolute;
+        //     bottom: 0.5rem;
+        //     left: 50%;
+        //     transform: translateX(-50%);
+        //     border-radius: 50%;
+        //   }
+        // }
+        // background-color: transparentize($red, $amount: 0.8);
+        // border-color: transparentize($dark_red, $amount: 0.95);
+        // font-weight: bold;
       }
     }
   }
@@ -132,19 +184,13 @@ body {
   text-align: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  padding: 0.5rem 0;
   h4 {
     font-size: 2rem;
     text-transform: uppercase;
-    color: $gray;
+    color: $dark;
     margin: 1rem 0;
-  }
-}
-
-.prev,
-.next {
-  &-month {
-    color: transparentize($dark, 0.5);
+    font-weight: normal;
   }
 }
 
@@ -165,7 +211,7 @@ body {
   }
 }
 
-h2#show-date {
+.current-date {
   font-size: 3rem;
   text-transform: uppercase;
   margin-bottom: 2rem;
@@ -287,5 +333,12 @@ h2#show-date {
 @media only screen and (max-width: 629px) {
   h1 {
     font-size: 1.5rem;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .date-list-item {
+    line-height: 40px;
+    height: 41px;
   }
 }
