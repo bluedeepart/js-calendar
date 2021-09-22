@@ -261,6 +261,7 @@ class Calender {
     ui.createDate();
 
     const eventsUI = new EventsUI(eventRoot);
+    eventsUI.createPopup();
     eventsUI.previewDate();
     eventsUI.showAllEvents();
 
@@ -311,21 +312,184 @@ class UI extends Calender {
   }
 }
 
-class Events {
+class Event {
   constructor(title, date) {
     this.title = title;
     this.date = date;
   }
 }
 
-class EventsUI extends Calender {
+class Events {
+  constructor() {
+    this.curDate = new Date().getDate();
+    this.curMonth = new Date().getMonth();
+    this.root = document.querySelector("body");
+    this.events = LocalSt.getEventsFromLocalSt();
+    // this.events = [];
+  }
+
+  get gsNewEventAdd() {
+    return this.events;
+  }
+
+  set gsRemoveEvent(parentEl) {
+    const id = parentEl.id;
+    return this.gsRemoveEvent.splice(id, 1);
+  }
+
+  get gsRemoveEvent() {
+    return this.gsNewEventAdd;
+  }
+
+  addEventHandler(e) {
+    e.preventDefault();
+    let evTitle = document.getElementById("event_title").value;
+    let evDate = document.getElementById("event_date").value;
+    const eventList = document.querySelector(".event-list");
+
+    if (evTitle.trim() !== "" && evDate.trim() !== "") {
+      const newEv = new Event(evTitle, evDate);
+      this.gsNewEventAdd.push(newEv);
+      LocalSt.addEventsFromLocalSt(newEv);
+      this.togglePopup();
+      this.checkEventList(eventList);
+    }
+  }
+
+  removeEventHandler(e) {
+    const eventList = document.querySelector(".event-list");
+    const btn = e.target;
+    const parentEl = btn.parentElement;
+    this.gsRemoveEvent = parentEl;
+    LocalSt.removeEventsFromLocalSt(parentEl.id);
+    parentEl.remove();
+    this.checkEventList(eventList);
+  }
+
+  checkEventList(eventList) {
+    if (this.gsCheckEventLength === 0) {
+      this.noEventMessage(eventList);
+    } else {
+      this.gsUpdateAllEvents = eventList;
+    }
+  }
+
+  get gsCheckEventLength() {
+    return this.gsNewEventAdd.length;
+  }
+
+  noEventMessage(eventList) {
+    const noEvent = StClass.createNode(eventList, "li", "no-event");
+    noEvent.innerHTML = `<li>No Event Added.</li>`;
+    return noEvent;
+  }
+
+  set gsUpdateAllEvents(eventList) {
+    if (this.gsCheckEventLength === 0) {
+      this.noEventMessage(eventList);
+    } else {
+      eventList.innerHTML = "";
+      this.gsNewEventAdd.map((event, index) => {
+        this.createEventListItem(eventList, event, index);
+      });
+    }
+  }
+
+  createEventListItem(eventList, event, index) {
+    const d = new Date(event.date).getDate();
+    const m = months[new Date(event.date).getMonth()].slice(0, 3);
+    const evDate = `${d} ${m}`;
+
+    const eventListItem = StClass.createNode(
+      eventList,
+      "li",
+      "event-list-item"
+    );
+    eventListItem.id = index;
+    eventListItem.innerHTML = `
+    <div class="event-title">${event.title}</div>
+    <div class="event-des">${evDate} </div>
+    <div class="cancel">&times;</div>
+    `;
+    eventListItem
+      .querySelector(".cancel")
+      .addEventListener("click", this.removeEventHandler.bind(this));
+  }
+
+  createPopup() {
+    const addEventWrapper = StClass.createNode(
+      this.root,
+      "div",
+      "add-event-wrapper"
+    );
+    const overlay = StClass.createNode(this.root, "div", "overlay");
+    const addEventForm = StClass.createNode(
+      addEventWrapper,
+      // "form",
+      "div",
+      "add-event-form"
+    );
+    // addEventForm.setAttribute("method", "POST");
+    const popupHeader = StClass.createNode(
+      addEventForm,
+      "div",
+      "add-event-header"
+    );
+    const popupbody = StClass.createNode(addEventForm, "div", "add-event-body");
+    const popupFooter = StClass.createNode(
+      addEventForm,
+      "div",
+      "add-event-footer"
+    );
+    const popupTitle = StClass.createNode(popupHeader, "h3", "add-event-title");
+    const closeBtn = StClass.createNode(popupHeader, "div", "cancel");
+    const formGroup1 = StClass.createNode(popupbody, "div", "form-group");
+    const formGroup2 = StClass.createNode(popupbody, "div", "form-group");
+    const label1 = StClass.createNode(formGroup1, "label", "form-label");
+    const label2 = StClass.createNode(formGroup2, "label", "form-label");
+    const titleInput = StClass.createNode(formGroup1, "input", "form-control");
+    const dateInput = StClass.createNode(formGroup2, "input", "form-control");
+
+    const cancelBtn = StClass.createNode(
+      popupFooter,
+      "button",
+      "btn",
+      "btn-secondary"
+    );
+    const submitBtn = StClass.createNode(
+      popupFooter,
+      "button",
+      "btn",
+      "btn-info",
+      "ml-3"
+    );
+
+    cancelBtn.innerHTML = "Cancel";
+    submitBtn.innerHTML = "Add Event";
+    // submitBtn.setAttribute("type", "submit");
+    popupTitle.innerHTML = "Add Event";
+    closeBtn.innerHTML = "&times;";
+    label1.innerHTML = "Event Title";
+    label2.innerHTML = "Event Date";
+    titleInput.setAttribute("type", "text");
+    titleInput.id = "event_title";
+    dateInput.setAttribute("type", "date");
+    dateInput.id = "event_date";
+
+    addEventForm.addEventListener("submit", this.addEventHandler.bind(this));
+    overlay.addEventListener("click", this.togglePopup.bind(this));
+    cancelBtn.addEventListener("click", this.togglePopup.bind(this));
+    closeBtn.addEventListener("click", this.togglePopup.bind(this));
+    submitBtn.addEventListener("click", this.addEventHandler.bind(this));
+
+    return addEventWrapper, overlay;
+  }
+}
+
+class EventsUI extends Events {
   constructor(eventRoot) {
     super();
     this.rootNode = document.getElementById(eventRoot);
-  }
-
-  addEvent() {
-    console.log("Event Added");
   }
 
   previewDate() {
@@ -338,10 +502,6 @@ class EventsUI extends Calender {
   }
 
   showAllEvents() {
-    let events = [
-      new Events("Yashvi's Birthday", "10 Aug"),
-      new Events("Divisha's Birthday", "18 May"),
-    ];
     const eventWrapper = StClass.createNode(
       this.rootNode,
       "div",
@@ -354,27 +514,57 @@ class EventsUI extends Calender {
     `;
     eventHeader
       .querySelector("button")
-      .addEventListener("click", this.addEvent);
-
+      .addEventListener("click", this.togglePopup.bind(this));
     const eventBody = StClass.createNode(eventWrapper, "div", "event-body");
+    const eventList = StClass.createNode(eventBody, "ul", "event-list");
 
-    if (events.length === 0) {
-      eventBody.innerHTML = `<p>No Event</p>`;
-    } else {
-      const eventList = StClass.createNode(eventBody, "ul", "event-list");
-      events.map((event) => {
-        const eventListItem = StClass.createNode(
-          eventList,
-          "li",
-          "event-list-item"
-        );
-        eventListItem.innerHTML = `
-        <div class="event-title">${event.title}</div>
-        <div class="event-des">${event.date} </div>
-        `;
-      });
-    }
+    this.gsUpdateAllEvents = eventList;
 
     return eventWrapper;
+  }
+
+  togglePopup() {
+    const popup = document.querySelector(".add-event-wrapper").classList;
+    const overlay = document.querySelector(".overlay").classList;
+    let evTitle = document.getElementById("event_title");
+    let evDate = document.getElementById("event_date");
+
+    if (popup.contains("show") && overlay.contains("show")) {
+      popup.remove("show");
+      overlay.remove("show");
+    } else {
+      popup.add("show");
+      overlay.add("show");
+    }
+    evTitle.value = "";
+    evDate.value = "";
+  }
+}
+
+class LocalSt extends Events {
+  //get events from local storage
+  static getEventsFromLocalSt() {
+    let events = "";
+    if (localStorage.getItem("events") === null) {
+      events = [];
+    } else {
+      events = JSON.parse(localStorage.getItem("events"));
+    }
+    return events;
+  }
+
+  //set events to local storage
+  static addEventsFromLocalSt(ev) {
+    const events = LocalSt.getEventsFromLocalSt();
+    events.push(ev);
+    localStorage.setItem("events", JSON.stringify(events));
+  }
+
+  //remove events from local storage
+  static removeEventsFromLocalSt(id) {
+    const events = LocalSt.getEventsFromLocalSt();
+    console.log(id);
+    events.splice(id, 1);
+    localStorage.setItem("events", JSON.stringify(events));
   }
 }
