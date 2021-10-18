@@ -54,7 +54,7 @@ class StClass {
   };
 }
 
-class Calender {
+export default class Calender {
   constructor() {
     this.d = new Date();
     this.curYear = this.d.getFullYear();
